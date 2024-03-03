@@ -232,13 +232,13 @@ num_epochs = 10
 min_loss = 1000
 for epoch in range(num_epochs):
     print("EPOCH : {}".format(epoch))
+    torch.save({
+        'model_state_dict': spell_model.state_dict(),
+        'optimizer_state_dict': optimizer.state_dict(),
+    }, f'model_latest.pth')
     t_loss = []
     batch_detail = {"correct_loss":[],"spell_loss":[],"upper_loss":[]}
     for i in tqdm(range(0, df.shape[0]//batch_size, 1)):
-        torch.save({
-            'model_state_dict': spell_model.state_dict(),
-            'optimizer_state_dict': optimizer.state_dict(),
-        }, f'model_latest.pth')
         # Get the current batch
         tmp_data = df.iloc[batch_size * i: batch_size * (i+1)].to_dict('records')
         # print(tmp_data)
