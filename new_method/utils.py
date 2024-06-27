@@ -28,3 +28,16 @@ def separate_punctuation_with_space(text):
         text = text.replace(i, " "+i+" ")
     text = re.sub(' +', ' ', text)
     return text
+
+def reverse(text):
+    res = []
+    mapping = {}
+    cnt = 0
+    for idx, i in enumerate(text.split(' ')):
+        out = separate_punctuation_with_space(norm_text(i.lower())).strip()
+        res.append(out)
+        for j in out.split(' '):
+            mapping[cnt] = idx
+            cnt += 1
+    return mapping, " ".join(res)
+        

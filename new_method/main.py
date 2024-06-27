@@ -38,15 +38,16 @@ class Correct(BaseModel):
 @app.post("/check_spell/")
 async def check_spell(lst: List[Input]):
     res = []
+    lst_text = []
     for i in lst:
-        i.text = separate_punctuation_with_space(norm_text(i.text.lower())).strip()
-    lst_text = [item.text for item in lst]
+        lst_text.append(separate_punctuation_with_space(norm_text(i.text.lower())).strip())
     predictions = corrector(lst_text, max_length=MAX_LENGTH, batch_size=batch_size)
     for item, pred in zip(lst, predictions):
+        reverse_mapping, process_text = reverse(item.text)
         result = []
-        for idx, (i, j) in enumerate(zip(item.text.split(' '), pred['generated_text'].lower().split(' '))):
+        for idx, (i, j) in enumerate(zip(process_text.split(' '), pred['generated_text'].lower().split(' '))):
             if i != j and "..." not in j:
-                result.append({"index": idx, "type": "GRAMMAR", "suggestion": j})
+                result.append({"index": reverse_mapping[idx], "type": "GRAMMAR", "suggestion": j})
         if len(result) > 0:
             res.append({"id": item.id, "text": item.text, "result": result, "meta_data": item.meta_data})
     return res
